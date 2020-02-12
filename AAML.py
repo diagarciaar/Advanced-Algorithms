@@ -65,6 +65,13 @@ def initialize(context):
             
 class Predictor(CustomFactor):
     """ Defines our machine learning model. """
+	positive_sentiment_pct = (
+        twitter_sentiment.bull_scored_messages.latest
+        / twitter_sentiment.total_scanned_messages.latest
+)
+    mean_sentiment_5day = SimpleMovingAverage(inputs=[sentiment.sentiment_signal], window_length=5)
+    total_revenue = Fundamentals.total_revenue.latest
+    sGrowRate_winsorized = sGrowRate.winsorize(min_percentile=0.05, max_percentile=0.95)
     
     # The factors that we want to pass to the compute function. We use an ordered dict for clear labeling of our inputs.
     factor_dict = OrderedDict([
